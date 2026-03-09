@@ -11,17 +11,19 @@ import {
     signOut 
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 import { 
-    getFirestore, 
-    doc, 
-    setDoc, 
-    getDoc, 
-    updateDoc 
-} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+    getDatabase, 
+    ref, 
+    set, 
+    get, 
+    child, 
+    update 
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js";
 
-// 2. Konfigurasi Asli Firebase Amalpad
+// 2. Konfigurasi Firebase TERBARU (Menggunakan Realtime Database)
 const firebaseConfig = {
     apiKey: "AIzaSyAmmWk4FKLjAGdfMPAVszgPJMdLc9qJY98",
     authDomain: "amalpad-app.firebaseapp.com",
+    databaseURL: "https://amalpad-app-default-rtdb.firebaseio.com",
     projectId: "amalpad-app",
     storageBucket: "amalpad-app.firebasestorage.app",
     messagingSenderId: "344360349317",
@@ -29,18 +31,18 @@ const firebaseConfig = {
     measurementId: "G-KB3T44DZ22"
 };
 
-// 3. Inisialisasi Firebase, Analytics, Auth, dan Firestore
+// 3. Inisialisasi Firebase & Realtime Database
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const auth = getAuth(app);
-const db = getFirestore(app);
+const db = getDatabase(app); 
 const provider = new GoogleAuthProvider();
 
 // 4. Fungsi Login & Logout
 window.loginDenganGoogle = async () => {
     try {
         await signInWithPopup(auth, provider);
-        // Alert sukses ditangani di dalam onAuthStateChanged agar tidak dobel
+        // Notifikasi sukses ditangani oleh observer onAuthStateChanged
     } catch (error) {
         console.error("Error login:", error);
         if (typeof window.showToast === 'function') {
@@ -59,7 +61,7 @@ window.logoutAkun = async () => {
         } else {
             alert("Berhasil keluar dari akun.");
         }
-        // Beri jeda 1 detik agar animasi Toast terlihat sebelum halaman direfresh
+        // Jeda 1 detik agar animasi Toast selesai sebelum halaman di-refresh
         setTimeout(() => { window.location.reload(); }, 1000); 
     } catch (error) {
         console.error("Error logout:", error);
@@ -67,39 +69,35 @@ window.logoutAkun = async () => {
 };
 
 // ==========================================
-// 5. SISTEM CLOUD SAVE (FIRESTORE LOGIC)
+// 5. SISTEM CLOUD SAVE (REALTIME DATABASE)
 // ==========================================
-
-// Fungsi global untuk menyimpan/update data ke Cloud dari mana saja
 window.saveDataKeCloud = async (dataBaru) => {
     const user = auth.currentUser;
-    if (!user) {
-        console.log("User belum login, progres hanya disimpan di HP (local).");
-        return; // Jangan save ke cloud kalau belum login
-    }
+    if (!user) return; 
 
     try {
-        const userRef = doc(db, "users", user.uid);
-        // { merge: true } mencegah tertimpanya seluruh dokumen jika kita hanya kirim sebagian field
-        await setDoc(userRef, dataBaru, { merge: true });
-        console.log("Data berhasil diamankan ke Jalur Langit! ☁️✓");
+        // Gunakan update() agar data lama tidak terhapus (hanya menimpa yang berubah)
+        await update(ref(db, 'users/' + user.uid), dataBaru);
+        console.log("Data berhasil diamankan ke Jalur Langit! (RTDB) ☁️✓");
     } catch (error) {
         console.error("Gagal save ke cloud:", error);
     }
 };
 
-// 6. Listener Status Login (Berjalan otomatis saat web dibuka)
+// 6. Listener Status Login
 onAuthStateChanged(auth, async (user) => {
     const btnLogin = document.getElementById('btn-google-login');
     const headerAvatar = document.getElementById('header-avatar');
     const statsUsername = document.getElementById('stats-username');
 
     if (user) {
-        // --- JIKA USER SUDAH LOGIN ---
+        // --- JIKA LOGIN BERHASIL ---
         console.log("User terdeteksi:", user.uid);
         
-        // Ubah UI Profil
-        if (headerAvatar) headerAvatar.innerHTML = `<img src="${user.photoURL}" class="w-full h-full object-cover rounded-full border-2 border-white dark:border-gray-800" alt="Avatar">`;
+        // Update UI Profil
+        if (headerAvatar) {
+            headerAvatar.innerHTML = `<img src="${user.photoURL}" class="w-full h-full object-cover rounded-full border-2 border-white dark:border-gray-800" alt="Avatar">`;
+        }
         if (statsUsername) statsUsername.innerText = user.displayName;
         if (btnLogin) {
             btnLogin.innerHTML = `<span>🚪</span> Keluar Akun`;
@@ -107,28 +105,28 @@ onAuthStateChanged(auth, async (user) => {
             btnLogin.classList.replace('text-blue-600', 'text-rose-600');
         }
 
-        // --- TARIK DATA DARI DATABASE ---
+        // --- TARIK DATA DARI RTDB ---
+        const dbRef = ref(db);
         try {
-            const userRef = doc(db, "users", user.uid);
-            const docSnap = await getDoc(userRef);
-
-            if (docSnap.exists()) {
-                // Jika user pemain lama, ambil datanya
-                const dataUser = docSnap.data();
+            const snapshot = await get(child(dbRef, `users/${user.uid}`));
+            
+            if (snapshot.exists()) {
+                const dataUser = snapshot.val();
                 console.log("Data user ditemukan:", dataUser);
                 
-                // TODO: Timpa variabel window.playerState milik quest.js dengan dataUser ini
-                // Contoh: window.playerState = dataUser.playerState; window.saveState(); window.updateHeader();
+                // Panggil fungsi render UI jika kamu sudah menyiapkannya (seperti di stats.js)
+                if (typeof window.loadDataDariCloud === 'function') {
+                    window.loadDataDariCloud(dataUser);
+                }
                 
                 if (typeof window.showToast === 'function') {
-                    window.showToast(`Selamat datang kembali, ${user.displayName}! Data tersinkron.`, 'success');
+                    window.showToast(`Selamat datang kembali, ${user.displayName}! Data disinkron.`, 'success');
                 } else {
                     alert(`Selamat datang kembali, ${user.displayName}! Data dari cloud ditarik.`);
                 }
-            } else {
-                // Jika user baru pertama kali main, buatkan struktur data awal di Firestore
-                console.log("User baru! Membuat profil kosong di database...");
                 
+            } else {
+                console.log("User baru! Membuat profil kosong di RTDB...");
                 const dataAwal = {
                     nama: user.displayName,
                     email: user.email,
@@ -139,24 +137,21 @@ onAuthStateChanged(auth, async (user) => {
                     terakhirLogin: new Date().toISOString()
                 };
                 
-                await setDoc(userRef, dataAwal);
-                console.log("Profil jalur langit berhasil dibuat!");
+                // Gunakan set() untuk inisialisasi awal user
+                await set(ref(db, 'users/' + user.uid), dataAwal);
                 
                 if (typeof window.showToast === 'function') {
-                    window.showToast(`Ahlan wa Sahlan, ${user.displayName}! Profil Amalpad berhasil dibuat.`, 'success');
+                    window.showToast(`Ahlan wa Sahlan, ${user.displayName}! Profil Amalpad dibuat.`, 'success');
                 } else {
                     alert(`Ahlan wa Sahlan, ${user.displayName}! Profil Amalpad berhasil dibuat.`);
                 }
             }
-        } catch (dbError) {
-            console.error("Error saat memproses database Firestore:", dbError);
+        } catch (error) {
+            console.error("Gagal menarik data dari RTDB:", error);
         }
 
     } else {
-        // --- JIKA USER BELUM LOGIN / BARU LOGOUT ---
-        console.log("Tidak ada user yang login.");
-        
-        // Kembalikan UI profil ke Default/Local State
+        // --- JIKA BELUM LOGIN ---
         if (headerAvatar) headerAvatar.innerHTML = 'A';
         if (statsUsername) statsUsername.innerText = window.playerState?.name || 'Player';
         
