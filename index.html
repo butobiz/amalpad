@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Amalpad - Solo Leveling Engine</title>
+    <!-- Tailwind CSS Engine -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: { 
+                        emerald: { 400: '#34d399', 500: '#10b981', 600: '#059669', 900: '#064e3b' },
+                        gray: { 900: '#0f172a', 800: '#1e293b' } 
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <!-- 🟢 TAMBAHKAN KODE INI UNTUK PWA & ICON -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#10b981">
+    <link rel="apple-touch-icon" href="icon.png">
+
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+<body class="bg-gray-200 dark:bg-gray-950 text-gray-800 dark:text-gray-100 transition-colors duration-500 antialiased selection:bg-emerald-500 selection:text-white font-sans overflow-x-hidden relative">
+
+    <!-- CONTAINER UTAMA -->
+    <div class="max-w-md mx-auto min-h-screen bg-gray-50 dark:bg-gray-900 shadow-2xl relative border-x border-gray-300 dark:border-gray-800/50 pb-[110px] overflow-hidden flex flex-col">
+        
+        <header class="sticky top-0 z-40 glass-premium px-5 py-4 flex justify-between items-center relative">
+            <div class="flex items-center gap-3 cursor-pointer group" onclick="window.switchTab('stats')">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-white font-black text-lg shadow-md border-2 border-white dark:border-gray-800 overflow-hidden transform transition group-hover:scale-105" id="header-avatar">A</div>
+                <div>
+                    <h1 class="text-sm font-black text-gray-900 dark:text-white leading-none tracking-tight">Amalpad.</h1>
+                    <p class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mt-0.5" id="header-level">Lv. 1</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="window.claimStreak()" class="bg-gradient-to-r from-orange-400 to-rose-500 text-white font-black text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-[0_4px_15px_rgba(244,63,94,0.3)] hover:scale-105 active:scale-95 transition-transform duration-200" title="Klaim Streak Harian">
+                    🔥 <span id="header-streak-count">0</span> | 🛡️ <span id="header-streak-shield">0</span>
+                </button>
+                <button onclick="window.openSettings()" class="w-9 h-9 rounded-xl bg-white dark:bg-gray-800 flex items-center justify-center text-base transition-transform active:scale-90 shadow-sm border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700">⚙️</button>
+            </div>
+            <div class="absolute bottom-0 left-0 w-full h-[3px] bg-gray-200 dark:bg-gray-800 overflow-hidden">
+                <div class="bg-gradient-to-r from-emerald-400 to-teal-500 h-full transition-all duration-700 ease-out" id="header-exp-bar" style="width: 0%"></div>
+            </div>
+        </header>
+
+        <div id="toast-container" class="fixed top-24 left-1/2 transform -translate-x-1/2 z-[100] flex flex-col gap-2 w-max max-w-[90%] pointer-events-none"></div>
+
+        <main id="app-content" class="relative w-full flex-1">
+            
+            <!-- VIEW: QUEST -->
+            <section id="view-quest" class="block animate-fade-in w-full pb-10">
+                <div class="p-5 space-y-6">
+                    <div class="text-center mb-8 pt-2 relative">
+                        <span class="bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-[0_0_20px_rgba(16,185,129,0.4)]">Daily Grind</span>
+                        <h2 class="text-3xl font-black text-gray-900 dark:text-white mt-3 drop-shadow-md tracking-tight">Tugas Langit 🎯</h2>
+                        <div class="flex flex-col items-center justify-center mt-3 gap-2">
+                            <p id="server-time-status" class="text-xs text-gray-500 dark:text-gray-400 font-medium flex items-center justify-center gap-1.5 bg-gray-100 dark:bg-gray-800 w-max px-3 py-1 rounded-full shadow-inner">
+                                <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_5px_#10b981]"></span> Sinkronisasi Real-Time ✓
+                            </p>
+                            <p id="daily-countdown" class="text-[10px] font-mono font-bold text-rose-500 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 px-2.5 py-1 rounded-md shadow-sm uppercase tracking-widest flex items-center gap-1.5">
+                                ⏳ Reset: --:--:--
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- KEWAJIBAN PUSAT -->
+                    <div class="glass-premium rounded-[2rem] p-5 border-t-4 border-t-emerald-500 transition-all duration-500 shadow-lg">
+                        <div class="flex justify-between items-end mb-4 px-1 border-b border-gray-200 dark:border-gray-700 pb-3">
+                            <div>
+                                <h3 class="text-base font-extrabold text-gray-900 dark:text-white flex items-center gap-2"><span class="text-xl">🕋</span> Kewajiban Pusat</h3>
+                                <p class="text-[9px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest mt-1">Terkunci otomatis sesuai jam</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-[10px] text-rose-500 font-black bg-rose-50 dark:bg-rose-500/10 px-2.5 py-1 rounded-lg flex items-center gap-1 border border-rose-200 dark:border-rose-500/20"><span class="animate-ping w-1.5 h-1.5 bg-rose-500 rounded-full inline-block"></span> Waspada Penalti</span>
+                                <p id="penalty-multiplier-text" class="text-[10px] text-rose-600 dark:text-rose-400 font-black mt-1.5">Multiplier: 1x</p>
+                            </div>
+                        </div>
+                        <div id="sholat-wajib-container" class="space-y-3 transition-all duration-500"></div>
+                    </div>
+
+                    <!-- SKENA KEJUTAN -->
+                    <div>
+                        <div class="flex justify-between items-end mb-3 px-1 mt-4">
+                            <h3 class="text-sm font-extrabold text-gray-900 dark:text-white flex items-center gap-2"><span class="text-xl">🎭</span> Skena Kejutan</h3>
+                            <span class="text-[10px] text-orange-600 dark:text-orange-400 font-bold bg-orange-50 dark:bg-orange-500/10 px-2.5 py-1 rounded-lg border border-orange-200 dark:border-orange-500/20">Misi Misteri 1/Hari</span>
+                        </div>
+                        <div id="kejutan-container"></div>
+                    </div>
+
+                    <!-- DAILY HABITS -->
+                    <div>
+                        <div class="flex justify-between items-end mb-3 px-1 mt-6">
+                            <h3 class="text-sm font-extrabold text-gray-900 dark:text-white flex items-center gap-2"><span class="text-xl">✨</span> Daily Habits</h3>
+                            <span class="text-[10px] text-blue-600 dark:text-blue-400 font-bold bg-blue-50 dark:bg-blue-500/10 px-2.5 py-1 rounded-lg border border-blue-200 dark:border-blue-500/20">Pilih 5 Per Hari</span>
+                        </div>
+                        <div id="habits-container" class="space-y-3"></div>
+                    </div>
+
+                    <!-- EPIC BOSS FIGHT -->
+                    <div id="epic-mission-wrapper" class="relative rounded-[2rem] p-1 mt-8 transition-all duration-500 bg-gray-200 dark:bg-gray-800 shadow-md">
+                        <div id="epic-lock-overlay" class="absolute inset-0 bg-white/70 dark:bg-black/70 backdrop-blur-md rounded-[2rem] z-20 flex flex-col items-center justify-center transition-opacity duration-500">
+                            <span class="text-5xl mb-3 drop-shadow-xl filter drop-shadow-sm">🔒</span>
+                            <p class="text-[10px] font-black text-gray-800 dark:text-white uppercase tracking-widest text-center px-6 leading-relaxed">Selesaikan Skena Kejutan & 5 Habits Untuk Membuka!</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-purple-800 to-indigo-900 rounded-[1.8rem] p-5 shadow-inner border border-purple-500/40 relative overflow-hidden">
+                            <div class="absolute -right-6 -top-6 text-8xl opacity-10 filter blur-[2px]">🐉</div>
+                            <div class="flex justify-between items-end mb-4 relative z-10 border-b border-purple-500/30 pb-3">
+                                <h3 class="text-base font-black text-white flex items-center gap-2 drop-shadow-md"><span class="text-xl">🐉</span> Misi Epikal</h3>
+                                <span class="text-[9px] text-purple-100 font-black bg-purple-500/50 px-2.5 py-1 rounded-lg border border-purple-400/50 animate-pulse tracking-widest uppercase">Legendary</span>
+                            </div>
+                            <div id="epic-container" class="relative z-10"></div>
+                        </div>
+                    </div>
+
+                    <!-- MISI SPESIAL (TIERED RPG STYLE) -->
+                    <div>
+                        <div class="flex justify-between items-end mb-4 px-1 mt-8">
+                            <div>
+                                <h3 class="text-sm font-extrabold text-gray-900 dark:text-white flex items-center gap-2"><span class="text-xl">🎁</span> Special Quest</h3>
+                                <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest mt-1">Unlock Koleksi Kosmetik</p>
+                            </div>
+                        </div>
+                        <div id="special-quests-container" class="space-y-4"></div>
+                    </div>
+
+                    <!-- TASBIH PINTAR -->
+                    <div class="glass-premium rounded-[2rem] p-6 text-center flex flex-col items-center border-t-4 border-t-emerald-500 mt-8 relative overflow-hidden shadow-lg" id="tasbih-main-wrapper">
+                        <!-- Anti-Cheat Overlay -->
+                        <div id="anti-cheat-overlay" class="hidden absolute inset-0 bg-gray-900/95 backdrop-blur-xl z-50 flex flex-col items-center justify-center p-6 text-center">
+                            <span class="text-5xl mb-4 animate-bounce drop-shadow-lg">🤖</span>
+                            <h4 class="text-rose-500 font-black text-xl uppercase tracking-widest mb-2 drop-shadow-md">Bot Detected!</h4>
+                            <p class="text-xs text-gray-300 mb-6 font-medium leading-relaxed max-w-[80%]">Ritme ketukanmu tidak wajar dan terlalu konstan bak mesin. Buktikan kamu manusia sejati.</p>
+                            <button onclick="window.resolveCaptcha()" class="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-black px-8 py-3.5 rounded-full shadow-[0_10px_25px_rgba(16,185,129,0.4)] transition-transform active:scale-90 tracking-wide text-sm">Saya Manusia ✓</button>
+                        </div>
+
+                        <h3 class="text-sm font-extrabold text-gray-900 dark:text-white mb-1 uppercase tracking-widest drop-shadow-sm">Tasbih Pintar</h3>
+                        <p class="text-[10px] text-gray-500 dark:text-gray-400 mb-5 font-medium">Capai milestone untuk unlock Skin Tasbih!</p>
+                        
+                        <div id="tasbih-combo-badge" class="hidden absolute top-20 right-6 bg-gradient-to-r from-orange-500 to-rose-500 text-white text-[10px] font-black px-3 py-1.5 rounded-full shadow-[0_0_20px_rgba(244,63,94,0.6)] rotate-12 z-20 transition-all">🔥 2x Combo</div>
+
+                        <select id="tasbih-type" class="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white text-xs font-bold rounded-xl p-3 mb-4 outline-none border border-gray-200 dark:border-gray-700 shadow-inner w-full max-w-[220px] text-center focus:ring-2 focus:ring-emerald-500/50 transition cursor-pointer appearance-none">
+                            <option value="tasbih">Tasbih (33x)</option>
+                            <option value="tahmid">Tahmid (33x)</option>
+                            <option value="takbir">Takbir (33x)</option>
+                            <option value="istighfar">Istighfar (100x)</option>
+                            <option value="sholawat">Sholawat (1000x)</option>
+                        </select>
+                        
+                        <button id="btn-tasbih" class="skin-tasbih-default relative z-10 mt-2 w-44 h-44 rounded-full border-[10px] text-6xl font-black shadow-[20px_20px_40px_rgba(0,0,0,0.08),-20px_-20px_40px_rgba(255,255,255,0.9)] dark:shadow-[15px_15px_30px_rgba(0,0,0,0.4),-15px_-15px_30px_rgba(255,255,255,0.03)] active:shadow-[inset_15px_15px_30px_rgba(0,0,0,0.1),inset_-15px_-15px_30px_rgba(255,255,255,0.8)] dark:active:shadow-[inset_15px_15px_30px_rgba(0,0,0,0.5),inset_-15px_-15px_30px_rgba(255,255,255,0.02)] transform transition-all duration-100 active:scale-[0.96] flex items-center justify-center bg-gray-50 dark:bg-gray-800 select-none cursor-pointer overflow-hidden">
+                            <span id="tasbih-counter-text" class="relative z-10 pointer-events-none drop-shadow-sm font-mono tracking-tighter">0</span>
+                        </button>
+                        
+                        <div class="w-full mt-10">
+                            <div class="flex justify-between items-end mb-1.5 px-1">
+                                <span class="text-[9px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest">Progress Ketukan</span>
+                                <span class="text-[10px] font-black text-emerald-600 dark:text-emerald-400" id="tasbih-target-text">0 / 33</span>
+                            </div>
+                            <div class="w-full bg-gray-200 dark:bg-gray-800 h-3.5 rounded-full overflow-hidden shadow-inner border border-gray-300 dark:border-gray-700 relative">
+                                <div id="tasbih-bar" class="bg-gradient-to-r from-emerald-400 to-teal-500 h-full transition-all duration-300 ease-out relative" style="width:0%">
+                                    <div class="absolute inset-0 bg-white/20 w-full animate-[pulse_2s_ease-in-out_infinite]"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <button id="tasbih-reset" class="mt-6 text-[10px] text-rose-500 font-bold hover:text-rose-600 dark:hover:text-rose-400 transition bg-rose-50 dark:bg-rose-500/10 px-6 py-2.5 rounded-full border border-rose-200 dark:border-rose-500/20 active:scale-95 shadow-sm uppercase tracking-wide">Ulangi Hitungan</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW: STATS -->
+            <section id="view-stats" class="hidden animate-fade-in w-full pb-10">
+                <div class="p-5 space-y-6">
+                    <div class="perspective-1000 mt-2" id="prayer-card-wrapper">
+                        <div id="prayer-card-element" class="relative w-full h-64 rounded-[2rem] p-6 shadow-2xl transition-all duration-300 transform-style-3d overflow-hidden flex flex-col justify-between card_dark">
+                            <button onclick="window.openEditProfileModal()" class="absolute top-4 right-4 w-9 h-9 bg-white/20 backdrop-blur-md border border-white/40 rounded-full flex items-center justify-center text-white text-sm z-50 hover:bg-white/40 transition active:scale-90 shadow-lg transform translate-z-[40px]" title="Edit Profil">✏️</button>
+                            <div class="absolute -right-8 -bottom-8 opacity-10 text-[11rem] pointer-events-none transform -rotate-12 z-0 filter drop-shadow-2xl">🎴</div>
+                            
+                            <div class="relative z-10 flex justify-between items-start w-full transform translate-z-[30px] pr-12">
+                                <div class="flex items-center gap-3.5">
+                                    <div class="w-16 h-16 rounded-full bg-emerald-500 flex items-center justify-center text-3xl font-black text-white shadow-xl border-2 border-white/30 overflow-hidden" id="stats-avatar-container"><span id="stats-avatar-initial">A</span></div>
+                                    <div>
+                                        <h3 class="font-black text-2xl text-white drop-shadow-lg leading-none tracking-tight" id="stats-username">Player</h3>
+                                        <span class="text-[9px] font-black text-white/80 uppercase tracking-widest bg-black/30 px-2.5 py-1 rounded-md mt-1.5 inline-block backdrop-blur-sm border border-white/10 shadow-sm" id="stats-title">Suhu Akhlaq</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="relative z-10 mt-4 mb-auto transform translate-z-[25px]">
+                                <p class="text-xs text-white/90 italic font-medium leading-relaxed drop-shadow-md border-l-2 border-emerald-400/60 pl-3 py-1" id="card-bio-text">"Sedang push rank ibadah jalur langit..."</p>
+                            </div>
+                            
+                            <div class="relative z-10 flex justify-between items-end w-full transform translate-z-[20px] bg-black/20 p-3 rounded-2xl backdrop-blur-sm border border-white/10 flex-col">
+                                <div class="w-full mb-3">
+                                    <div class="flex justify-between items-end mb-1">
+                                        <span class="text-[10px] font-black text-emerald-300 uppercase tracking-widest">Experience</span>
+                                        <span class="text-[9px] text-white/80 font-bold" id="stats-exp-progress-text">0 / 1000</span>
+                                    </div>
+                                    <div class="w-full bg-black/40 h-1.5 rounded-full overflow-hidden border border-white/10">
+                                        <div class="bg-emerald-400 h-full transition-all duration-700 ease-out" id="stats-exp-bar" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                <div class="w-full flex justify-between items-end">
+                                    <div>
+                                        <p class="text-xl font-black text-white font-mono leading-none drop-shadow-md" id="stats-exp-display">0</p>
+                                    </div>
+                                    <div class="text-right border-l border-white/20 pl-4">
+                                        <span class="text-[10px] text-white/70 uppercase tracking-widest font-black block mb-0.5">Total Dzikir</span>
+                                        <p class="text-lg font-black text-white tracking-wide drop-shadow-md font-mono" id="stats-tasbih-total">0x</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-premium rounded-[2rem] p-6 relative overflow-hidden shadow-lg">
+                        <div class="absolute -right-4 -top-4 opacity-[0.02] text-[8rem] pointer-events-none">🕸️</div>
+                        <div class="text-center mb-6 relative z-10">
+                            <h3 class="font-black text-lg text-gray-900 dark:text-white drop-shadow-sm flex justify-center items-center gap-2"><span class="text-xl">📊</span> Hexagon Skena</h3>
+                            <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest mt-1">Distribusi Atribut Spiritual</p>
+                        </div>
+                        <div class="w-full flex justify-center items-center relative h-[260px] z-10">
+                            <svg viewBox="0 0 200 200" class="w-full h-full max-w-[280px] drop-shadow-2xl" id="radar-svg-main">
+                                <defs>
+                                    <linearGradient id="radar-gradient-main" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#10b981" stop-opacity="0.85" />
+                                        <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.75" />
+                                    </linearGradient>
+                                    <filter id="glow-main" x="-20%" y="-20%" width="140%" height="140%">
+                                        <feGaussianBlur stdDeviation="3" result="blur" />
+                                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                    </filter>
+                                </defs>
+                                <g id="radar-web-group-main" stroke="rgba(156, 163, 175, 0.25)" stroke-width="1"></g>
+                                <g id="radar-axis-group-main" stroke="rgba(156, 163, 175, 0.4)" stroke-width="1.5" stroke-dasharray="3,3"></g>
+                                <polygon id="radar-data-polygon-main" points="" fill="url(#radar-gradient-main)" stroke="#10b981" stroke-width="2.5" class="radar-polygon" filter="url(#glow-main)"></polygon>
+                                <g id="radar-nodes-group-main"></g>
+                            </svg>
+                            <div id="radar-labels-container-main" class="absolute inset-0 pointer-events-none"></div>
+                        </div>
+                    </div>
+
+                    <div class="glass-premium rounded-[2rem] p-6 shadow-lg">
+                        <div class="flex justify-between items-center mb-5 border-b border-gray-200 dark:border-gray-700 pb-3">
+                            <h3 class="font-black text-sm text-gray-900 dark:text-white flex items-center gap-2"><span class="text-lg">🔥</span> Heatmap Istiqomah</h3>
+                            <span class="text-[9px] bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 font-bold px-2.5 py-1 rounded-md border border-emerald-200 dark:border-emerald-500/30">28 Hari Terakhir</span>
+                        </div>
+                        <div class="grid grid-cols-7 gap-1.5 sm:gap-2 justify-center w-full max-w-[320px] mx-auto" id="heatmap-container"></div>
+                        <div class="flex justify-between items-center mt-4 px-2 text-[9px] text-gray-500 font-bold uppercase tracking-widest">
+                            <span>Mager</span>
+                            <div class="flex gap-1.5">
+                                <span class="w-3 h-3 rounded-sm bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700"></span>
+                                <span class="w-3 h-3 rounded-sm bg-emerald-200 dark:bg-emerald-900/60"></span>
+                                <span class="w-3 h-3 rounded-sm bg-emerald-400"></span>
+                                <span class="w-3 h-3 rounded-sm bg-emerald-600 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+                            </div>
+                            <span>Gacor</span>
+                        </div>
+                    </div>
+
+                    <div class="glass-premium rounded-[2rem] p-6 shadow-lg">
+                        <div class="flex justify-between items-center mb-5 border-b border-gray-200 dark:border-gray-700 pb-3">
+                            <h3 class="font-black text-sm text-gray-900 dark:text-white flex items-center gap-2"><span class="text-lg">🏆</span> Lemari Piala</h3>
+                            <span class="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Sinkronisasi Asli</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-3.5" id="achievements-container"></div>
+                    </div>
+
+                    <div class="glass-premium rounded-[2rem] p-6 shadow-lg border-t-4 border-t-blue-500">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-black text-sm text-gray-900 dark:text-white flex items-center gap-2"><span class="text-lg">💎</span> Koleksi Kosmetik</h3>
+                            <span class="text-[9px] bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 font-bold px-2.5 py-1 rounded-md border border-blue-200 dark:border-blue-500/30">Ganti Tema Bebas</span>
+                        </div>
+                        <div class="flex gap-2 mb-5 bg-gray-100 dark:bg-gray-800 p-1 rounded-xl">
+                            <button onclick="window.switchSkinTab('tasbih')" id="tab-skin-tasbih" class="flex-1 text-[10px] font-black uppercase py-2 rounded-lg bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm transition-all duration-300">Skin Tasbih</button>
+                            <button onclick="window.switchSkinTab('card')" id="tab-skin-card" class="flex-1 text-[10px] font-black uppercase py-2 rounded-lg text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-all duration-300">Tema Kartu</button>
+                        </div>
+                        <div id="skin-collection-container" class="space-y-4 max-h-[350px] overflow-y-auto pr-2 hide-scrollbar"></div>
+                    </div>
+
+                    <button onclick="window.openFlexCardModal()" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-black py-4.5 rounded-2xl shadow-[0_10px_30px_rgba(16,185,129,0.3)] flex items-center justify-center gap-2.5 transition-transform hover:scale-[1.02] active:scale-95 text-sm tracking-wide">
+                        <span class="text-2xl drop-shadow-md">📸</span> Flexing Prayer Card
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <!-- BOTTOM NAVIGATION -->
+        <nav class="fixed bottom-0 left-0 right-0 z-50 pointer-events-none flex justify-center pb-safe">
+            <div class="w-full max-w-md bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-t border-gray-200 dark:border-gray-800 p-2 sm:p-3 flex justify-around shadow-[0_-10px_40px_rgba(0,0,0,0.08)] pointer-events-auto rounded-t-3xl transition-colors duration-500">
+                <button id="nav-btn-quest" onclick="window.switchTab('quest')" class="nav-btn text-emerald-500 flex flex-col items-center p-2 transition-all duration-300 w-24 active:scale-90 scale-105">
+                    <span class="text-[26px] mb-1.5 filter drop-shadow-sm transition-transform duration-300">🎯</span>
+                    <span class="text-[10px] font-black uppercase tracking-widest">Quest</span>
+                </button>
+                <button id="nav-btn-stats" onclick="window.switchTab('stats')" class="nav-btn text-gray-400 dark:text-gray-500 flex flex-col items-center p-2 transition-all duration-300 w-24 active:scale-90">
+                    <span class="text-[26px] mb-1.5 filter drop-shadow-sm grayscale opacity-50 transition-all duration-300">📊</span>
+                    <span class="text-[10px] font-black uppercase tracking-widest transition-colors duration-300">Stats</span>
+                </button>
+            </div>
+        </nav>
+    </div>
+
+    <!-- MODALS -->
+    <div id="settings-modal" class="hidden fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm items-center justify-center p-4 transition-opacity duration-300 opacity-0">
+        <div id="settings-content" class="bg-gray-50 dark:bg-gray-900 w-full max-w-sm rounded-[2.5rem] p-7 shadow-2xl border border-gray-200 dark:border-gray-700 transform scale-95 transition-transform duration-300 relative">
+            <button onclick="window.closeSettings()" class="absolute top-5 right-5 w-9 h-9 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-500 font-black hover:bg-gray-300 dark:hover:bg-gray-700 transition active:scale-90">✕</button>
+            <h3 class="font-black text-xl text-gray-900 dark:text-white mb-6 text-center tracking-tight">Pengaturan ⚙️</h3>
+            <div class="space-y-4">
+                <button id="theme-toggle-btn" class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 rounded-2xl flex justify-between items-center transition active:scale-95 shadow-sm hover:border-emerald-500/50">
+                    <div class="flex items-center gap-3.5"><span class="text-2xl">🌓</span><span class="font-bold text-sm text-gray-900 dark:text-white tracking-wide">Tema Aplikasi</span></div>
+                    <span class="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest bg-gray-100 dark:bg-gray-900 px-2.5 py-1 rounded-md" id="theme-status-text">Ganti</span>
+                </button>
+                <button onclick="window.hardRefresh()" class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 rounded-2xl flex justify-between items-center transition active:scale-95 shadow-sm hover:border-emerald-500/50">
+                    <div class="flex items-center gap-3.5"><span class="text-2xl">⚡</span><div class="text-left"><p class="font-bold text-sm text-gray-900 dark:text-white leading-tight tracking-wide">Hard Refresh</p><p class="text-[10px] text-gray-500 mt-1">Atasi lag / visual glitch</p></div></div>
+                    <span class="text-[10px] font-black text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-1 rounded-md uppercase tracking-widest">Refresh</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="edit-profile-modal" class="hidden fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm items-center justify-center p-4 transition-opacity duration-300 opacity-0">
+        <div id="edit-profile-content" class="bg-gray-50 dark:bg-gray-900 w-full max-w-sm rounded-[2.5rem] p-7 shadow-2xl border border-gray-200 dark:border-gray-700 transform scale-95 transition-transform duration-300 relative">
+            <button onclick="window.closeEditProfileModal()" class="absolute top-5 right-5 w-9 h-9 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-500 font-black hover:bg-gray-300 dark:hover:bg-gray-700 transition active:scale-90">✕</button>
+            <h3 class="font-black text-xl text-gray-900 dark:text-white mb-5 text-center tracking-tight">Edit Profil ✏️</h3>
+            <div class="space-y-4">
+                <div class="flex justify-center mb-3">
+                    <div class="relative group cursor-pointer" onclick="document.getElementById('profile-upload').click()">
+                        <div class="w-24 h-24 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 text-white flex items-center justify-center text-5xl font-black shadow-lg overflow-hidden border-4 border-white dark:border-gray-800" id="edit-profile-avatar-preview">A</div>
+                        <div class="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><span class="text-white text-2xl">📷</span></div>
+                    </div>
+                    <input type="file" id="profile-upload" accept="image/*" class="hidden" onchange="window.handleImageUpload(event)">
+                </div>
+                <div><label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1.5">Nama Skena</label><input type="text" id="input-edit-name" class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none font-bold shadow-inner" maxlength="15"></div>
+                <div><label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1.5">Bio Kehidupan</label><textarea id="input-edit-bio" class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none resize-none h-24 shadow-inner leading-relaxed" placeholder="Tulis moto ibadahmu..."></textarea></div>
+                <button onclick="window.saveProfile()" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-black py-3.5 rounded-xl shadow-[0_5px_15px_rgba(16,185,129,0.3)] transition-transform active:scale-95 tracking-wide mt-2">Simpan Perubahan</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="flex-card-modal" class="hidden fixed inset-0 z-[80] bg-black/95 backdrop-blur-xl flex-col items-center justify-center p-0 transition-opacity duration-300 opacity-0 overflow-y-auto py-10">
+        <button onclick="window.closeFlexCardModal()" class="absolute top-6 right-6 w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white font-black z-50 hover:bg-white/20 transition backdrop-blur-md border border-white/20 active:scale-90">✕</button>
+        <p class="text-white/80 text-xs font-bold mb-6 bg-white/10 px-5 py-2.5 rounded-full backdrop-blur-md border border-white/20 animate-bounce shadow-lg tracking-wide">📸 Tekan Vol Down + Power untuk Screenshot!</p>
+        <div id="flex-card-capture-area" class="relative w-[320px] h-[568px] rounded-[2rem] shadow-[0_0_50px_rgba(16,185,129,0.2)] overflow-hidden flex flex-col justify-between p-6 transform transition-transform shrink-0">
+            <div id="flex-bg-element" class="absolute inset-0 z-0 card_dark"></div>
+            <div class="absolute -right-12 -bottom-10 opacity-[0.05] text-[15rem] pointer-events-none transform -rotate-12 z-0 filter drop-shadow-2xl">🎴</div>
+            <div class="relative z-10 flex justify-between items-start w-full">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-16 h-16 rounded-full bg-emerald-500 flex items-center justify-center text-3xl font-black text-white shadow-xl border-[3px] border-white/40 overflow-hidden" id="flex-avatar-container"><span id="flex-avatar-initial" class="relative z-10 text-white">A</span></div>
+                    <div>
+                        <h3 class="font-black text-2xl text-white drop-shadow-lg leading-none tracking-tight" id="flex-username">Player</h3>
+                        <span class="text-[9px] font-black text-white/90 uppercase tracking-widest bg-white/20 px-2.5 py-1 rounded-md mt-1.5 inline-block backdrop-blur-md border border-white/30 shadow-sm" id="flex-title">Suhu Akhlaq</span>
+                    </div>
+                </div>
+            </div>
+            <div class="relative z-10 mt-4 text-center">
+                <p class="text-[11px] text-white/90 italic font-medium leading-relaxed drop-shadow-md bg-black/20 p-2.5 rounded-xl border border-white/10 backdrop-blur-md" id="flex-bio-text">"Sedang push rank ibadah jalur langit..."</p>
+            </div>
+            <div class="relative z-10 flex flex-col items-center justify-center w-full my-auto mt-2">
+                <div class="w-full flex justify-center items-center relative h-[210px]">
+                    <svg viewBox="0 0 200 200" class="w-full h-full max-w-[210px] drop-shadow-[0_0_20px_rgba(255,255,255,0.15)]" id="radar-svg-flex">
+                        <defs>
+                            <linearGradient id="radar-gradient-flex" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#fff" stop-opacity="0.9" />
+                                <stop offset="100%" stop-color="#10b981" stop-opacity="0.7" />
+                            </linearGradient>
+                            <filter id="glow-flex" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="2" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter>
+                        </defs>
+                        <g id="radar-web-group-flex" stroke="rgba(255,255,255,0.3)" stroke-width="1"></g>
+                        <g id="radar-axis-group-flex" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-dasharray="3,3"></g>
+                        <polygon id="radar-data-polygon-flex" points="" fill="url(#radar-gradient-flex)" stroke="#fff" stroke-width="2.5" class="radar-polygon" filter="url(#glow-flex)"></polygon>
+                        <g id="radar-nodes-group-flex"></g>
+                    </svg>
+                    <div id="radar-labels-container-flex" class="absolute inset-0 pointer-events-none"></div>
+                </div>
+            </div>
+            <div class="relative z-10 w-full bg-black/30 backdrop-blur-md rounded-2xl p-4 border border-white/20 shadow-inner flex justify-between items-center mt-auto">
+                <div><p class="text-[9px] text-white/70 uppercase tracking-widest font-black mb-0.5">Total Dzikir</p><p class="text-base font-black text-white font-mono tracking-wide" id="flex-tasbih-total">0x</p></div>
+                <div class="text-right border-l border-white/20 pl-4"><p class="text-[9px] text-white/70 uppercase tracking-widest font-black mb-0.5 text-emerald-300">OVERALL RATING</p><p class="text-3xl font-black text-white leading-none drop-shadow-[0_0_15px_rgba(16,185,129,0.8)] font-mono" id="flex-overall-score">99</p></div>
+            </div>
+            <div class="absolute bottom-3 left-0 w-full text-center z-10 opacity-50"><span class="text-[8px] font-black text-white uppercase tracking-[0.25em] drop-shadow-md">Amalpad. | Solo Leveling Engine</span></div>
+        </div>
+    </div>
+
+    <script src="js/quest.js" defer></script> 
+    <script src="js/stats.js" defer></script>
+
+    <!-- 🟢 TAMBAHKAN KODE INI UNTUK MENGAKTIFKAN OFFLINE MODE -->
+    <script>
+        // Pengecekan protocol untuk menghindari error di mode preview (blob:/data:)
+        if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.protocol === 'http:')) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker Aktif!'))
+                    .catch(err => console.log('Service Worker Gagal didaftarkan:', err));
+            });
+        } else {
+            console.log('Service Worker tidak didaftarkan (berjalan di mode preview atau local).');
+        }
+    </script>
+</body>
+</html>
+
