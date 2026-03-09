@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Amalpad - Solo Leveling Engine</title>
-    <!-- Tailwind CSS Engine -->
-    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -19,9 +18,8 @@
             }
         }
     </script>
-    <script src="[https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js](https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js)"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
-    <!-- Setup PWA & Styling -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#10b981">
     <link rel="apple-touch-icon" href="icon.png">
@@ -29,7 +27,6 @@
 </head>
 <body class="bg-gray-200 dark:bg-gray-950 text-gray-800 dark:text-gray-100 transition-colors duration-500 antialiased selection:bg-emerald-500 selection:text-white font-sans overflow-x-hidden relative">
 
-    <!-- CONTAINER UTAMA -->
     <div class="max-w-md mx-auto min-h-screen bg-gray-50 dark:bg-gray-900 shadow-2xl relative border-x border-gray-300 dark:border-gray-800/50 pb-[110px] overflow-hidden flex flex-col">
         
         <header class="sticky top-0 z-40 glass-premium px-5 py-4 flex justify-between items-center relative">
@@ -55,7 +52,6 @@
 
         <main id="app-content" class="relative w-full flex-1">
             
-            <!-- VIEW: QUEST -->
             <section id="view-quest" class="block animate-fade-in w-full pb-10">
                 <div class="p-5 space-y-6">
                     <div class="text-center mb-8 pt-2 relative">
@@ -71,7 +67,6 @@
                         </div>
                     </div>
 
-                    <!-- KEWAJIBAN PUSAT -->
                     <div class="glass-premium rounded-[2rem] p-5 border-t-4 border-t-emerald-500 transition-all duration-500 shadow-lg">
                         <div class="flex justify-between items-end mb-4 px-1 border-b border-gray-200 dark:border-gray-700 pb-3">
                             <div>
@@ -86,7 +81,6 @@
                         <div id="sholat-wajib-container" class="space-y-3 transition-all duration-500"></div>
                     </div>
 
-                    <!-- SKENA KEJUTAN -->
                     <div>
                         <div class="flex justify-between items-end mb-3 px-1 mt-4">
                             <h3 class="text-sm font-extrabold text-gray-900 dark:text-white flex items-center gap-2"><span class="text-xl">🎭</span> Skena Kejutan</h3>
@@ -95,7 +89,6 @@
                         <div id="kejutan-container"></div>
                     </div>
 
-                    <!-- DAILY HABITS -->
                     <div>
                         <div class="flex justify-between items-end mb-3 px-1 mt-6">
                             <h3 class="text-sm font-extrabold text-gray-900 dark:text-white flex items-center gap-2"><span class="text-xl">✨</span> Daily Habits</h3>
@@ -104,7 +97,6 @@
                         <div id="habits-container" class="space-y-3"></div>
                     </div>
 
-                    <!-- EPIC BOSS FIGHT -->
                     <div id="epic-mission-wrapper" class="relative rounded-[2rem] p-1 mt-8 transition-all duration-500 bg-gray-200 dark:bg-gray-800 shadow-md">
                         <div id="epic-lock-overlay" class="absolute inset-0 bg-white/70 dark:bg-black/70 backdrop-blur-md rounded-[2rem] z-20 flex flex-col items-center justify-center transition-opacity duration-500">
                             <span class="text-5xl mb-3 drop-shadow-xl filter drop-shadow-sm">🔒</span>
@@ -120,7 +112,6 @@
                         </div>
                     </div>
 
-                    <!-- MISI SPESIAL (TIERED RPG STYLE) -->
                     <div>
                         <div class="flex justify-between items-end mb-4 px-1 mt-8">
                             <div>
@@ -131,9 +122,7 @@
                         <div id="special-quests-container" class="space-y-4"></div>
                     </div>
 
-                    <!-- TASBIH PINTAR -->
                     <div class="glass-premium rounded-[2rem] p-6 text-center flex flex-col items-center border-t-4 border-t-emerald-500 mt-8 relative overflow-hidden shadow-lg" id="tasbih-main-wrapper">
-                        <!-- Anti-Cheat Overlay -->
                         <div id="anti-cheat-overlay" class="hidden absolute inset-0 bg-gray-900/95 backdrop-blur-xl z-50 flex flex-col items-center justify-center p-6 text-center">
                             <span class="text-5xl mb-4 animate-bounce drop-shadow-lg">🤖</span>
                             <h4 class="text-rose-500 font-black text-xl uppercase tracking-widest mb-2 drop-shadow-md">Bot Detected!</h4>
@@ -174,7 +163,6 @@
                 </div>
             </section>
 
-            <!-- VIEW: STATS -->
             <section id="view-stats" class="hidden animate-fade-in w-full pb-10">
                 <div class="p-5 space-y-6">
                     <div class="perspective-1000 mt-2" id="prayer-card-wrapper">
@@ -291,7 +279,6 @@
             </section>
         </main>
 
-        <!-- BOTTOM NAVIGATION -->
         <nav class="fixed bottom-0 left-0 right-0 z-50 pointer-events-none flex justify-center pb-safe">
             <div class="w-full max-w-md bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-t border-gray-200 dark:border-gray-800 p-2 sm:p-3 flex justify-around shadow-[0_-10px_40px_rgba(0,0,0,0.08)] pointer-events-auto rounded-t-3xl transition-colors duration-500">
                 <button id="nav-btn-quest" onclick="window.switchTab('quest')" class="nav-btn text-emerald-500 flex flex-col items-center p-2 transition-all duration-300 w-24 active:scale-90 scale-105">
@@ -306,7 +293,6 @@
         </nav>
     </div>
 
-    <!-- MODALS -->
     <div id="settings-modal" class="hidden fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm items-center justify-center p-4 transition-opacity duration-300 opacity-0">
         <div id="settings-content" class="bg-gray-50 dark:bg-gray-900 w-full max-w-sm rounded-[2.5rem] p-7 shadow-2xl border border-gray-200 dark:border-gray-700 transform scale-95 transition-transform duration-300 relative">
             <button onclick="window.closeSettings()" class="absolute top-5 right-5 w-9 h-9 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-500 font-black hover:bg-gray-300 dark:hover:bg-gray-700 transition active:scale-90">✕</button>
@@ -387,11 +373,9 @@
         </div>
     </div>
 
-    <!-- Script Utama (Sudah Dipisah) -->
     <script src="js/quest.js" defer></script> 
     <script src="js/stats.js" defer></script>
 
-    <!-- Aktivasi Mode PWA / Service Worker -->
     <script>
         if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.protocol === 'http:')) {
             window.addEventListener('load', () => {
