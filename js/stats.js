@@ -1,5 +1,5 @@
 /* ========================================================================== */
-/* stats.js - Berisi Logika Tampilan Profil & Rendering (Refactored & Safe)   */
+/* stats.js - Berisi Logika Tampilan Profil & Rendering (Cloud Ready ☁️)      */
 /* ========================================================================== */
 
 window.handleImageUpload = function(event) {
@@ -21,6 +21,11 @@ window.handleImageUpload = function(event) {
             const pv = document.getElementById('edit-profile-avatar-preview');
             if(pv) pv.innerHTML = `<img src="${compressedDataUrl}" class="w-full h-full object-cover rounded-full border-4 border-white dark:border-gray-800">`; 
             window.showToast("Foto Profil disiapkan!", "success");
+
+            // --- CLOUD SAVE: Avatar ---
+            if (typeof window.saveDataKeCloud === 'function') {
+                window.saveDataKeCloud({ avatar: compressedDataUrl });
+            }
         }; 
         img.src = e.target.result;
     }; 
@@ -93,7 +98,16 @@ window.saveProfile = () => {
     if(window.playerState) {
         if(inputName) window.playerState.name = inputName.value.trim() || "User"; 
         if(inputBio) window.playerState.bio = inputBio.value.trim() || "..."; 
+        
         if(typeof window.saveState === 'function') window.saveState(); 
+        
+        // --- CLOUD SAVE: Nama & Bio ---
+        if (typeof window.saveDataKeCloud === 'function') {
+            window.saveDataKeCloud({
+                name: window.playerState.name,
+                bio: window.playerState.bio
+            });
+        }
     }
     window.renderProfileTexts(); 
     if(typeof window.updateHeader === 'function') window.updateHeader(); 
@@ -109,7 +123,7 @@ window.init3DCard = function() {
         const r = wrapper.getBoundingClientRect(); 
         const x = e.clientX - r.left, y = e.clientY - r.top; 
         const cX = r.width/2, cY = r.height/2; 
-        if(cX === 0 || cY === 0) return; // Mencegah NaN Crash jika elemen collapse
+        if(cX === 0 || cY === 0) return; 
         card.style.transform = `rotateX(${((y - cY) / cY) * -12}deg) rotateY(${((x - cX) / cX) * 12}deg)`; 
     });
     wrapper.addEventListener('mouseleave', () => { card.style.transform = `rotateX(0deg) rotateY(0deg)`; });
@@ -140,7 +154,6 @@ window.renderRadarChart = function(targetMode = 'main') {
     let textColor = targetMode === 'flex' ? "text-white/90" : "text-gray-500 dark:text-gray-400"; 
     let valColor = targetMode === 'flex' ? "text-emerald-300 drop-shadow-md" : "text-emerald-600 dark:text-emerald-400";
     
-    // Safe Radar Data Fetch
     const safeRadar = window.playerState?.radar || { pusat: 10, aura: 10, peka: 10, sigma: 10, derma: 10, stoic: 10 };
 
     for(let i=0; i<6; i++) {
@@ -180,7 +193,6 @@ window.renderRadarChart = function(targetMode = 'main') {
 window.renderHeatmap = function() {
     const container = document.getElementById('heatmap-container'); if(!container) return;
     let html = ''; 
-    // Failsafe jika history tidak lengkap
     const history = window.playerState?.history || Array(28).fill(0); 
     
     for(let i=0; i<28; i++) {
@@ -198,12 +210,11 @@ window.renderHeatmap = function() {
 window.renderAchievements = function() {
     const container = document.getElementById('achievements-container'); if(!container) return;
     
-    // Safe Variable Extraction
     const radar = window.playerState?.radar || { pusat: 0, aura: 0, peka: 0, sigma: 0, derma: 0, stoic: 0 }; 
     const exp = window.playerState?.exp || 0;
     const overallLevel = Math.floor(exp / 1000) + 1; 
     const s = window.playerState?.stats || { tasbihTotal: 0, questsCompleted: 0, epicCompleted: 0 };
-    const safeBadgeDefs = typeof BADGE_DEFS !== 'undefined' ? BADGE_DEFS : []; // Cegah crash lintas file
+    const safeBadgeDefs = typeof BADGE_DEFS !== 'undefined' ? BADGE_DEFS : []; 
     
     if(safeBadgeDefs.length === 0) return;
 
@@ -230,7 +241,6 @@ const rarityColors = {
     "Mythic": "text-amber-500 bg-amber-100 dark:bg-amber-900/30 border border-amber-500/50 shadow-[0_0_10px_rgba(245,158,11,0.3)]"
 };
 
-// Pastikan variabel global skin bisa diakses secara universal
 window.getCurrentSkinTab = () => typeof currentSkinTab !== 'undefined' ? currentSkinTab : (window._currentSkinTab || 'tasbih');
 window.setCurrentSkinTab = (tab) => { if(typeof currentSkinTab !== 'undefined') { currentSkinTab = tab; } window._currentSkinTab = tab; };
 
@@ -252,6 +262,12 @@ window.equipSkin = (type, skinId) => {
     window.playerState.activeSkins[type] = skinId; 
     
     if(typeof window.saveState === 'function') window.saveState();
+    
+    // --- CLOUD SAVE: Skin Kosmetik ---
+    if (typeof window.saveDataKeCloud === 'function') {
+        window.saveDataKeCloud({ activeSkins: window.playerState.activeSkins });
+    }
+
     window.renderSkinCollection(); window.renderProfileTexts(); 
     if(typeof window.initTasbih === 'function') window.initTasbih();
     
@@ -315,6 +331,38 @@ window.openFlexCardModal = function() {
 window.closeFlexCardModal = function() { 
     const m = document.getElementById('flex-card-modal'); 
     if(m) { m.classList.add('opacity-0'); setTimeout(() => { m.classList.add('hidden'); m.classList.remove('flex'); }, 300); }
+};
+
+// ==========================================================================
+// FUNGSI SAKTI: Menarik Data dari Cloud & Merender Ulang Seluruh UI Stats
+// ==========================================================================
+window.loadDataDariCloud = function(cloudData) {
+    if (!window.playerState) window.playerState = {}; 
+
+    // 1. Timpa data lokal dengan data dari Firebase
+    if (cloudData.name !== undefined) window.playerState.name = cloudData.name;
+    if (cloudData.bio !== undefined) window.playerState.bio = cloudData.bio;
+    if (cloudData.avatar !== undefined) window.playerState.avatar = cloudData.avatar;
+    if (cloudData.exp !== undefined) window.playerState.exp = cloudData.exp;
+    if (cloudData.level !== undefined) window.playerState.level = cloudData.level;
+    
+    // Failsafe untuk nested objects (biar tidak error kalau strukturnya belum ada)
+    if (cloudData.stats) window.playerState.stats = { ...window.playerState.stats, ...cloudData.stats };
+    if (cloudData.radar) window.playerState.radar = { ...window.playerState.radar, ...cloudData.radar };
+    if (cloudData.activeSkins) window.playerState.activeSkins = { ...window.playerState.activeSkins, ...cloudData.activeSkins };
+    if (cloudData.history) window.playerState.history = cloudData.history;
+
+    // 2. Simpan ke local storage sebagai backup offline
+    if (typeof window.saveState === 'function') window.saveState();
+
+    // 3. Render Ulang Semua Komponen Visual di Tab Stats
+    window.renderProfileTexts();
+    window.renderRadarChart('main');
+    window.renderHeatmap();
+    window.renderAchievements();
+    window.renderSkinCollection();
+    
+    console.log("☁️ Data Jalur Langit berhasil disinkronisasi ke UI!");
 };
 
 // --- Inisiasi Utama Aplikasi ---
