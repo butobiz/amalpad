@@ -1,5 +1,5 @@
 /* ========================================================================== */
-/* quest.js - Berisi Logika Misi, Database Utama, & State                     */
+/* quest.js - Berisi Logika Misi, Database Utama, & State (Cloud Ready ☁️)   */
 /* ========================================================================== */
 
 // Inisialisasi State yang Aman (Agar tidak error undefined)
@@ -54,10 +54,6 @@ window.sholatWajib = [
     { id: "sw-maghrib", title: "Maghrib", start: 18, end: 19, exp: 50, type: "pusat" }, 
     { id: "sw-isya", title: "Isya", start: 19, end: 24, exp: 50, type: "pusat" } 
 ];
-
-// ==========================================================================
-// EXPANDED MISSION POOLS - ROCKSTAR / STEAM RPG STYLE
-// ==========================================================================
 
 const POOL_KEJUTAN = [
     { id: "kj1", title: "Pungut sampah di jalanan 🗑️", exp: 20, stat: "peka", wajib: false }, 
@@ -190,6 +186,8 @@ window.updateHeader = function() {
 
 window.checkDailyReset = function() {
     const todayStr = new Date().toDateString();
+    let needsCloudSync = false; // Deteksi jika ada perubahan data akibat reset
+
     if (window.playerState.lastLoginDate !== todayStr) {
         const lastDate = new Date(window.playerState.lastLoginDate);
         const today = new Date(todayStr);
@@ -201,6 +199,7 @@ window.checkDailyReset = function() {
             localStorage.setItem('penaltyMultiplier', 1); 
         }
         window.playerState.lastLoginDate = todayStr; window.saveState();
+        needsCloudSync = true;
     }
     
     const lastStreak = window.playerState.streak.lastClickDate;
@@ -216,8 +215,19 @@ window.checkDailyReset = function() {
                 window.playerState.streak.count = 0; window.showToast("Streak reset karena terlewat 💔", "error");
             }
             window.saveState();
+            needsCloudSync = true;
         }
     }
+
+    // --- CLOUD SAVE: Sync jika terjadi reset harian ---
+    if (needsCloudSync && typeof window.saveDataKeCloud === 'function') {
+        window.saveDataKeCloud({
+            history: window.playerState.history,
+            streak: window.playerState.streak,
+            lastLoginDate: window.playerState.lastLoginDate
+        });
+    }
+
     window.updateHeader();
 };
 
@@ -235,7 +245,15 @@ window.claimStreak = function() {
     
     if(navigator.vibrate) navigator.vibrate(50);
     if(typeof confetti === 'function') confetti({ particleCount: 50, spread: 60, origin: { y: 0.1 } });
-    window.saveState(); window.updateHeader();
+    
+    window.saveState(); 
+    
+    // --- CLOUD SAVE: Simpan Streak ---
+    if (typeof window.saveDataKeCloud === 'function') {
+        window.saveDataKeCloud({ streak: window.playerState.streak });
+    }
+
+    window.updateHeader();
 };
 
 window.addExp = function(amount, isQuest = true) {
@@ -358,6 +376,12 @@ window.handleSholatClick = function(id, isActive, isFuture, isDone) {
         window.addExp(parseInt(checkbox.dataset.exp)); window.addRadarStat(checkbox.dataset.type, 5);
         window.showToast("Alhamdulillah selesai! Multiplier Penalti direset.", "success");
         if(navigator.vibrate) navigator.vibrate(50); if(typeof confetti === 'function') confetti({ particleCount: 100, spread: 70, origin: { y: 0.5 } });
+        
+        // --- CLOUD SAVE: Pengerjaan Sholat ---
+        if (typeof window.saveDataKeCloud === 'function') {
+            window.saveDataKeCloud({ exp: window.playerState.exp, radar: window.playerState.radar, stats: window.playerState.stats });
+        }
+
         window.renderSholatWajib();
     }
 }
@@ -416,6 +440,12 @@ window.renderMissions = function() {
             window.showToast(`Gacor! +${this.dataset.exp} EXP Didapatkan.`, 'success');
             if(navigator.vibrate) navigator.vibrate(20);
             if(typeof confetti === 'function') confetti({ particleCount: 30, spread: 40, origin: { y: 0.8 } });
+            
+            // --- CLOUD SAVE: Pengerjaan Misi & Habit ---
+            if (typeof window.saveDataKeCloud === 'function') {
+                window.saveDataKeCloud({ exp: window.playerState.exp, radar: window.playerState.radar, stats: window.playerState.stats });
+            }
+
             window.renderMissions(); window.checkEpicUnlock();
         });
     });
@@ -450,6 +480,12 @@ window.checkEpicUnlock = function() {
                 window.showToast("LEGENDARY! Misi Epikal Diselesaikan!", "epic");
                 if(navigator.vibrate) navigator.vibrate([100, 50, 200]);
                 if(typeof confetti === 'function') confetti({ particleCount: 300, spread: 150, zIndex: 9999, colors: ['#9333ea', '#a855f7', '#fbbf24'] });
+                
+                // --- CLOUD SAVE: Misi Epikal ---
+                if (typeof window.saveDataKeCloud === 'function') {
+                    window.saveDataKeCloud({ exp: window.playerState.exp, radar: window.playerState.radar, stats: window.playerState.stats });
+                }
+
                 window.checkEpicUnlock(); 
             });
         });
@@ -508,14 +544,39 @@ window.initTasbih = function() {
         updateTasbihUI();
 
         let dailyRewards = JSON.parse(localStorage.getItem(`tasbihRewards_${todayStr}`)) || { '33': false, '100': false, '1000': false };
-        if (count === 33 && !dailyRewards['33']) { window.addExp(10, false); window.showToast("Target 33x Tercapai! +10 EXP ✨", "success"); dailyRewards['33'] = true; if(typeof confetti === 'function') confetti({ particleCount: 50 }); } 
-        else if (count === 100 && !dailyRewards['100']) { window.addExp(30, false); window.showToast("Luar Biasa! 100x Tercapai! +30 EXP 🚀", "success"); dailyRewards['100'] = true; if(typeof confetti === 'function') confetti({ particleCount: 100 }); } 
-        else if (count === 1000 && !dailyRewards['1000']) { window.addExp(100, false); window.showToast("LEGENDARIS! 1000x Tercapai! +100 EXP 👑", "epic"); dailyRewards['1000'] = true; if(typeof confetti === 'function') confetti({ particleCount: 200, spread: 150, zIndex: 9999 }); }
+        
+        // --- CLOUD SAVE: Momen Milestone Tasbih ---
+        if (count === 33 && !dailyRewards['33']) { 
+            window.addExp(10, false); window.showToast("Target 33x Tercapai! +10 EXP ✨", "success"); dailyRewards['33'] = true; 
+            if(typeof confetti === 'function') confetti({ particleCount: 50 }); 
+            if (typeof window.saveDataKeCloud === 'function') window.saveDataKeCloud({ exp: window.playerState.exp, stats: window.playerState.stats });
+        } 
+        else if (count === 100 && !dailyRewards['100']) { 
+            window.addExp(30, false); window.showToast("Luar Biasa! 100x Tercapai! +30 EXP 🚀", "success"); dailyRewards['100'] = true; 
+            if(typeof confetti === 'function') confetti({ particleCount: 100 }); 
+            if (typeof window.saveDataKeCloud === 'function') window.saveDataKeCloud({ exp: window.playerState.exp, stats: window.playerState.stats });
+        } 
+        else if (count === 1000 && !dailyRewards['1000']) { 
+            window.addExp(100, false); window.showToast("LEGENDARIS! 1000x Tercapai! +100 EXP 👑", "epic"); dailyRewards['1000'] = true; 
+            if(typeof confetti === 'function') confetti({ particleCount: 200, spread: 150, zIndex: 9999 }); 
+            if (typeof window.saveDataKeCloud === 'function') window.saveDataKeCloud({ exp: window.playerState.exp, stats: window.playerState.stats });
+        }
         localStorage.setItem(`tasbihRewards_${todayStr}`, JSON.stringify(dailyRewards));
         
         if (count === target) { comboMultiplier = 0; if(comboBadge) comboBadge.classList.add('hidden'); }
     });
 
-    if(resetBtn) { resetBtn.addEventListener('click', () => { if(navigator.vibrate) navigator.vibrate(20); count = 0; comboMultiplier = 0; if(comboBadge) comboBadge.classList.add('hidden'); localStorage.setItem(`tasbih_${currentType}`, 0); updateTasbihUI(); }); }
+    if(resetBtn) { 
+        resetBtn.addEventListener('click', () => { 
+            if(navigator.vibrate) navigator.vibrate(20); 
+            
+            // --- CLOUD SAVE: Simpan hitungan terakhir sebelum di-reset ---
+            if (typeof window.saveDataKeCloud === 'function') {
+                window.saveDataKeCloud({ stats: window.playerState.stats });
+            }
+
+            count = 0; comboMultiplier = 0; if(comboBadge) comboBadge.classList.add('hidden'); localStorage.setItem(`tasbih_${currentType}`, 0); updateTasbihUI(); 
+        }); 
+    }
     target = getTypeTarget(currentType); count = parseInt(localStorage.getItem(`tasbih_${currentType}`) || 0); updateTasbihUI();
 };
