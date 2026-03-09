@@ -55,12 +55,36 @@ window.sholatWajib = [
     { id: "sw-isya", title: "Isya", start: 19, end: 24, exp: 50, type: "pusat" } 
 ];
 
+// ==========================================================================
+// EXPANDED MISSION POOLS - ROCKSTAR / STEAM RPG STYLE
+// ==========================================================================
+
 const POOL_KEJUTAN = [
     { id: "kj1", title: "Pungut sampah di jalanan 🗑️", exp: 20, stat: "peka", wajib: false }, 
     { id: "kj2", title: "Senyum ke orang sekitar 😊", exp: 15, stat: "aura", wajib: false }, 
     { id: "kj3", title: "Ibadah awal waktu ⏰", exp: 50, stat: "pusat", wajib: true }, 
     { id: "kj4", title: "Jaga ucapan seharian 🤐", exp: 50, stat: "stoic", wajib: true }, 
-    { id: "kj5", title: "Maafkan kesalahan orang ❤️", exp: 40, stat: "stoic", wajib: false }
+    { id: "kj5", title: "Maafkan kesalahan orang ❤️", exp: 40, stat: "stoic", wajib: false },
+    { id: "kj6", title: "Bantu ringankan tugas orang tua/teman 🤝", exp: 30, stat: "peka", wajib: false },
+    { id: "kj7", title: "Kasih makan hewan jalanan (kucing/burung) 🐈", exp: 25, stat: "derma", wajib: false },
+    { id: "kj8", title: "Berbagi makanan atau minuman 🍱", exp: 35, stat: "derma", wajib: false },
+    { id: "kj9", title: "Sapa ramah satpam/petugas kebersihan 💂", exp: 20, stat: "aura", wajib: false },
+    { id: "kj10", title: "Rapikan tempat tidur sendiri 🛏️", exp: 15, stat: "pusat", wajib: false },
+    { id: "kj11", title: "Tahan amarah saat lagi emosi 😤", exp: 60, stat: "stoic", wajib: true },
+    { id: "kj12", title: "Rapikan sandal/sepatu berantakan di masjid 👞", exp: 25, stat: "peka", wajib: false },
+    { id: "kj13", title: "Berhenti main HP 1 jam sebelum tidur 📵", exp: 40, stat: "sigma", wajib: false },
+    { id: "kj14", title: "Ucapkan terima kasih ke 3 orang hari ini 🙏", exp: 20, stat: "aura", wajib: false },
+    { id: "kj15", title: "Sedekah subuh berapapun nominalnya 🪙", exp: 50, stat: "derma", wajib: true },
+    { id: "kj16", title: "Dengar curhat teman dengan empati penuh 👂", exp: 30, stat: "peka", wajib: false },
+    { id: "kj17", title: "Singkirkan benda tajam/batu dari jalanan 🪨", exp: 30, stat: "peka", wajib: false },
+    { id: "kj18", title: "Kirim chat semangat ke sahabat/keluarga 💬", exp: 20, stat: "aura", wajib: false },
+    { id: "kj19", title: "Beli dagangan kecil di pinggir jalan 🛒", exp: 35, stat: "derma", wajib: false },
+    { id: "kj20", title: "Berwudhu sebelum tidur 💧", exp: 40, stat: "pusat", wajib: true },
+    { id: "kj21", title: "Ucapkan salam saat masuk ruangan/rumah 🚪", exp: 15, stat: "aura", wajib: false },
+    { id: "kj22", title: "Berdiri di kendaraan umum untuk yang butuh 🚌", exp: 45, stat: "peka", wajib: false },
+    { id: "kj23", title: "Tahan diri dari ghibah (ngomongin orang) 🤐", exp: 60, stat: "stoic", wajib: true },
+    { id: "kj24", title: "Baca doa sebelum dan sesudah makan 🍽️", exp: 20, stat: "pusat", wajib: false },
+    { id: "kj25", title: "Pungut sampah di area tempatmu duduk 🗑️", exp: 25, stat: "peka", wajib: false }
 ];
 
 const POOL_HABITS = [
@@ -69,19 +93,61 @@ const POOL_HABITS = [
     { id: "hb3", title: "Baca Kitab 1 Lembar 📖", diff: "normal", exp: 40, stat: "pusat" }, 
     { id: "hb4", title: "Olahraga 15 Menit 💪", diff: "normal", exp: 30, stat: "sigma" }, 
     { id: "hb5", title: "Detox Sosmed 2 Jam 📵", diff: "hard", exp: 80, stat: "stoic" }, 
-    { id: "hb6", title: "Minum Air Putih 2L 💧", diff: "easy", exp: 15, stat: "stoic" }
+    { id: "hb6", title: "Minum Air Putih 2L 💧", diff: "easy", exp: 15, stat: "stoic" },
+    { id: "hb7", title: "Sholat Dhuha minimal 2 rakaat ☀️", diff: "normal", exp: 50, stat: "pusat" },
+    { id: "hb8", title: "Sholat Tahajud malam ini 🌌", diff: "hard", exp: 100, stat: "pusat" },
+    { id: "hb9", title: "Baca Al-Qur'an 1 Juz 📖", diff: "hard", exp: 120, stat: "sigma" },
+    { id: "hb10", title: "Hafalan 1 ayat baru hari ini 🧠", diff: "normal", exp: 40, stat: "sigma" },
+    { id: "hb11", title: "Jalan kaki 5.000 langkah 🚶", diff: "normal", exp: 30, stat: "sigma" },
+    { id: "hb12", title: "Dzikir Al-Mathurat (Pagi/Petang) 📿", diff: "normal", exp: 40, stat: "pusat" },
+    { id: "hb13", title: "Membaca buku pengembangan diri 15 menit 📚", diff: "easy", exp: 25, stat: "stoic" },
+    { id: "hb14", title: "No Sugar / Tidak konsumsi manis 1 hari 🚫", diff: "hard", exp: 80, stat: "stoic" },
+    { id: "hb15", title: "Berhenti makan sebelum kenyang 🍽️", diff: "normal", exp: 50, stat: "stoic" },
+    { id: "hb16", title: "Dengarkan 1 kajian online/podcast 🎧", diff: "easy", exp: 25, stat: "aura" },
+    { id: "hb17", title: "Bersedekah / Infaq harian 💸", diff: "normal", exp: 50, stat: "derma" },
+    { id: "hb18", title: "Bantu pekerjaan rumah (nyapu/cuci piring) 🧹", diff: "easy", exp: 30, stat: "peka" },
+    { id: "hb19", title: "Tidur lebih awal (sebelum jam 10 malam) 😴", diff: "hard", exp: 80, stat: "sigma" },
+    { id: "hb20", title: "Bangun sebelum waktu subuh tiba ⏰", diff: "hard", exp: 100, stat: "pusat" },
+    { id: "hb21", title: "Jaga wudhu (batal langsung wudhu lagi) 💧", diff: "hard", exp: 150, stat: "pusat" },
+    { id: "hb22", title: "Sholat Rawatib (Qobliyah/Ba'diyah) 🕌", diff: "normal", exp: 60, stat: "pusat" },
+    { id: "hb23", title: "Review pelajaran/ilmu yang didapat hari ini 📝", diff: "easy", exp: 20, stat: "sigma" },
+    { id: "hb24", title: "Jurnal rasa syukur (tulis 3 hal baik hari ini) ✍️", diff: "easy", exp: 15, stat: "aura" },
+    { id: "hb25", title: "Kerjakan tugas paling berat di pagi hari 🌅", diff: "normal", exp: 60, stat: "sigma" }
 ];
 
 const POOL_EPIKAL = [
-    { id: "ep1", title: "Ibadah 1/3 Malam 🌌", exp: 200, stat: "pusat", desc: "Ujian elit, hasil selangit." }, 
-    { id: "ep2", title: "Khatam Target Bacaan 📜", exp: 250, stat: "pusat", desc: "Fokus tingkat tinggi." }
+    { id: "ep1", title: "Ibadah 1/3 Malam 🌌", exp: 200, stat: "pusat", desc: "Ujian elit, koneksi satelit langsung ke langit." }, 
+    { id: "ep2", title: "Khatam Target Bacaan 📜", exp: 250, stat: "pusat", desc: "Fokus tingkat tinggi, tak terdistraksi duniawi." },
+    { id: "ep3", title: "Puasa Daud (Sehari puasa, sehari tidak) 🛡️", exp: 500, stat: "sigma", desc: "Level puasa tertinggi, uji ketahanan fisik dan mental maksimal." },
+    { id: "ep4", title: "I'tikaf di Masjid seharian penuh 🕌", exp: 300, stat: "pusat", desc: "Mengisolasi diri dari sistem matriks duniawi." },
+    { id: "ep5", title: "Traktir makan sahabat/orang tak dikenal 🍛", exp: 400, stat: "derma", desc: "Critical hit untuk mengalahkan sifat bakhil dalam diri." },
+    { id: "ep6", title: "Khatam Al-Qur'an dalam 1 Bulan 📖", exp: 1000, stat: "pusat", desc: "Konsistensi tanpa batas. Ultimate grinding." },
+    { id: "ep7", title: "Tidak marah sama sekali dalam 1 minggu 🧘", exp: 500, stat: "stoic", desc: "Pengendalian ego level dewa. Boss fight batin." },
+    { id: "ep8", title: "Detox Sosmed Total 7 Hari 📵", exp: 600, stat: "stoic", desc: "Menghilang dari timeline, log-in ke real life." },
+    { id: "ep9", title: "Hafal Surat Al-Kahfi lengkap 110 Ayat 🧠", exp: 800, stat: "sigma", desc: "Armor perlindungan maksimal dari fitnah akhir zaman." },
+    { id: "ep10", title: "Sholat Jamaah 40 hari berturut-turut tanpa masbuq 🚶", exp: 2000, stat: "pusat", desc: "Quest legendaris pembebas sifat munafik. The True Veteran." },
+    { id: "ep11", title: "Donor Darah 🩸", exp: 300, stat: "peka", desc: "Memberikan sebagian health point (HP) untuk orang lain." },
+    { id: "ep12", title: "Jadi relawan sosial / bantu panti asuhan 🤝", exp: 400, stat: "peka", desc: "Mengasah empati sosial tingkat tinggi." },
+    { id: "ep13", title: "Selesaikan 1 buku Sirah Nabawiyah 📚", exp: 250, stat: "sigma", desc: "Upgrade lore & skill tree dari sumber aslinya." },
+    { id: "ep14", title: "Mulai Nabung Umroh tembus target awal 🕋", exp: 1500, stat: "pusat", desc: "Panggilan rindu. The ultimate fast travel." },
+    { id: "ep15", title: "Maafkan musuh terbesar dalam hidup 🕊️", exp: 700, stat: "aura", desc: "Membersihkan debuff hati paling berkerak." },
+    { id: "ep16", title: "Sholat Dhuha 8 rakaat full ☀️", exp: 200, stat: "derma", desc: "Sedekah harian untuk seluruh persendian tubuh." },
+    { id: "ep17", title: "Bangun jam 3 pagi konstan selama 1 minggu ⏰", exp: 500, stat: "sigma", desc: "Mematahkan belenggu rasa malas tingkat akhir." },
+    { id: "ep18", title: "Workout intens hingga batas limit (Failure) 🏃", exp: 250, stat: "sigma", desc: "Membentuk stat fisik pejuang tangguh." },
+    { id: "ep19", title: "Hafal dan praktikkan 1 Hadits Arbain minggu ini 📜", exp: 300, stat: "pusat", desc: "Membumikan lore menjadi core gameplay." },
+    { id: "ep20", title: "Menyantuni Anak Yatim secara langsung 👧", exp: 400, stat: "derma", desc: "Holy element penangkal hati yang mengeras." },
+    { id: "ep21", title: "Tinggalkan 1 kebiasaan buruk selamanya 🚫", exp: 1000, stat: "stoic", desc: "Pertarungan paling brutal melawan sisi gelap diri sendiri." },
+    { id: "ep22", title: "Mengajarkan ilmu bermanfaat ke orang lain 🗣️", exp: 350, stat: "aura", desc: "Amal jariyah. Passive income EXP yang tak terputus." },
+    { id: "ep23", title: "Berkemah / Tadabbur Alam tanpa sinyal HP 🏕️", exp: 400, stat: "peka", desc: "Merenungi kebesaran grafis ciptaan-Nya." },
+    { id: "ep24", title: "Bersihkan toilet masjid sampai kinclong 🧽", exp: 500, stat: "stoic", desc: "Menghancurkan debuff kesombongan paling dalam." },
+    { id: "ep25", title: "Sambung silaturahmi yang sempat terputus lama 🤝", exp: 600, stat: "peka", desc: "Membuka hidden path rezeki dan umur panjang." }
 ];
 
 const SPECIAL_QUESTS = [
-    { id: "sq1", tier: "I", rank: "Common", title: "Pemula Skena", desc: "Selesaikan 50 Misi Harian", reqType: "quest", reqAmount: 50, rewardSkin: "card_green", rewardName: "Emerald Card", color: "from-green-500 to-emerald-600", bgDark: "bg-green-900/20", borderDark: "border-green-500/30" },
-    { id: "sq2", tier: "II", rank: "Rare", title: "Istiqomah", desc: "Selesaikan 150 Misi Harian", reqType: "quest", reqAmount: 150, rewardSkin: "card_holo", rewardName: "Holo Card", color: "from-blue-400 to-indigo-600", bgDark: "bg-blue-900/20", borderDark: "border-blue-500/30" },
+    { id: "sq1", tier: "I", rank: "Common", title: "Pemula Skena", desc: "Selesaikan 150 Misi Harian", reqType: "quest", reqAmount: 150, rewardSkin: "card_green", rewardName: "Emerald Card", color: "from-green-500 to-emerald-600", bgDark: "bg-green-900/20", borderDark: "border-green-500/30" },
+    { id: "sq2", tier: "II", rank: "Rare", title: "Istiqomah", desc: "Selesaikan 350 Misi Harian", reqType: "quest", reqAmount: 350, rewardSkin: "card_holo", rewardName: "Holo Card", color: "from-blue-400 to-indigo-600", bgDark: "bg-blue-900/20", borderDark: "border-blue-500/30" },
     { id: "sq3", tier: "III", rank: "Epic", title: "Sepuh Tasbih", desc: "Capai 10.000x Total Dzikir", reqType: "tasbih", reqAmount: 10000, rewardSkin: "tasbih-glow", rewardName: "Neon Tasbih", color: "from-purple-500 to-fuchsia-600", bgDark: "bg-purple-900/20", borderDark: "border-purple-500/30" },
-    { id: "sq4", tier: "IV", rank: "Legendary", title: "Naga Epikal", desc: "Kalahkan 15 Boss Epikal", reqType: "epic", reqAmount: 15, rewardSkin: "card_crown", rewardName: "Crown Card", color: "from-orange-500 to-red-600", bgDark: "bg-orange-900/20", borderDark: "border-orange-500/30" },
+    { id: "sq4", tier: "IV", rank: "Legendary", title: "Naga Epikal", desc: "Kalahkan 55 Boss Epikal", reqType: "epic", reqAmount: 15, rewardSkin: "card_crown", rewardName: "Crown Card", color: "from-orange-500 to-red-600", bgDark: "bg-orange-900/20", borderDark: "border-orange-500/30" },
     { id: "sq5", tier: "V", rank: "Mythic", title: "Dewa Tasbih", desc: "Capai 50.000x Total Dzikir", reqType: "tasbih", reqAmount: 50000, rewardSkin: "tasbih-gold", rewardName: "Gold Tasbih", color: "from-yellow-400 to-amber-600", bgDark: "bg-yellow-900/20", borderDark: "border-yellow-500/30" }
 ];
 
