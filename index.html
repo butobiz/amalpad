@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Amalpad - Solo Leveling Engine</title>
     <!-- Tailwind CSS Engine -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -19,15 +19,13 @@
             }
         }
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="[https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js](https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js)"></script>
     
-    <!-- 🟢 TAMBAHKAN KODE INI UNTUK PWA & ICON -->
+    <!-- Setup PWA & Styling -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#10b981">
     <link rel="apple-touch-icon" href="icon.png">
-
     <link rel="stylesheet" href="css/style.css">
-
 </head>
 <body class="bg-gray-200 dark:bg-gray-950 text-gray-800 dark:text-gray-100 transition-colors duration-500 antialiased selection:bg-emerald-500 selection:text-white font-sans overflow-x-hidden relative">
 
@@ -389,22 +387,19 @@
         </div>
     </div>
 
+    <!-- Script Utama (Sudah Dipisah) -->
     <script src="js/quest.js" defer></script> 
     <script src="js/stats.js" defer></script>
 
-    <!-- 🟢 TAMBAHKAN KODE INI UNTUK MENGAKTIFKAN OFFLINE MODE -->
+    <!-- Aktivasi Mode PWA / Service Worker -->
     <script>
-        // Pengecekan protocol untuk menghindari error di mode preview (blob:/data:)
         if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.protocol === 'http:')) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
                     .then(reg => console.log('Service Worker Aktif!'))
                     .catch(err => console.log('Service Worker Gagal didaftarkan:', err));
             });
-        } else {
-            console.log('Service Worker tidak didaftarkan (berjalan di mode preview atau local).');
         }
     </script>
 </body>
 </html>
-
