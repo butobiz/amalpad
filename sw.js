@@ -1,4 +1,4 @@
-const CACHE_NAME = 'amalpad-cache-v1.4';
+const CACHE_NAME = 'amalpad-cache-v1.5';
 
 // Menggunakan jalur relatif yang aman tanpa dot-slash (./) di depannya
 // agar otomatis menyesuaikan dengan base URL (misal: /amalpad-app/)
