@@ -19,18 +19,18 @@ const BADGE_DEFS = [
     { icon: "📿", title: "Dzikir", desc: "Ahli Tasbih", type: "tasbih_total" }
 ];
 
-// Konstanta Skins Kosmetik (Ditambahkan)
+// Konstanta Skins Kosmetik (Target Super Hardcore)
 const SKINS = {
     tasbih: [
         { id: "default", req: 0, name: "Tasbih Standar", rarity: "Common", desc: "Tasbih andalan para pemula.", icon: "📿", previewClass: "bg-emerald-100 text-emerald-600 border border-emerald-300" },
-        { id: "glow", req: 10000, name: "Neon Tasbih", rarity: "Epic", desc: "Menyala menembus kegelapan malam.", icon: "✨", previewClass: "bg-blue-900 text-blue-300 border border-blue-500 shadow-[0_0_10px_#3b82f6]" },
+        { id: "glow", req: 33333, name: "Neon Tasbih", rarity: "Epic", desc: "Menyala menembus kegelapan malam.", icon: "✨", previewClass: "bg-blue-900 text-blue-300 border border-blue-500 shadow-[0_0_10px_#3b82f6]" },
         { id: "gold", req: 50000, name: "Gold Tasbih", rarity: "Mythic", desc: "Ditempa dari keikhlasan absolut.", icon: "👑", previewClass: "bg-yellow-600 text-yellow-100 border border-yellow-400 shadow-[0_0_15px_#f59e0b]" }
     ],
     card: [
         { id: "card_dark", reqType: "quest", req: 0, name: "Midnight Skena", rarity: "Common", desc: "Kartu ID dasar menembus malam.", icon: "🌙", previewClass: "bg-slate-900 border-purple-500" },
-        { id: "card_green", reqType: "quest", req: 50, name: "Emerald Card", rarity: "Rare", desc: "Kesejukan iman dalam satu kartu.", icon: "🌿", previewClass: "bg-emerald-700 border-emerald-400" },
-        { id: "card_holo", reqType: "quest", req: 150, name: "Holo Card", rarity: "Epic", desc: "Memantulkan cahaya hidayah.", icon: "🌈", previewClass: "bg-gradient-to-r from-blue-500 to-purple-500" },
-        { id: "card_crown", reqType: "epic", req: 15, name: "Crown Card", rarity: "Legendary", desc: "Identitas sang Penakluk Epikal.", icon: "🐉", previewClass: "bg-yellow-800 border-yellow-300" }
+        { id: "card_green", reqType: "quest", req: 500, name: "Emerald Card", rarity: "Rare", desc: "Kesejukan iman dalam satu kartu.", icon: "🌿", previewClass: "bg-emerald-700 border-emerald-400" },
+        { id: "card_holo", reqType: "quest", req: 2000, name: "Holo Card", rarity: "Epic", desc: "Memantulkan cahaya hidayah.", icon: "🌈", previewClass: "bg-gradient-to-r from-blue-500 to-purple-500" },
+        { id: "card_crown", reqType: "epic", req: 150, name: "Crown Card", rarity: "Legendary", desc: "Identitas sang Penakluk Epikal.", icon: "🐉", previewClass: "bg-yellow-800 border-yellow-300" }
     ]
 };
 
@@ -139,12 +139,13 @@ const POOL_EPIKAL = [
     { id: "ep25", title: "Sambung silaturahmi yang sempat terputus lama 🤝", exp: 600, stat: "peka", desc: "Membuka hidden path rezeki dan umur panjang." }
 ];
 
+// Konstanta Special Quests (Skin bawaan dihapus, hanya menampilkan misi unlockable)
 const SPECIAL_QUESTS = [
-    { id: "sq1", tier: "I", rank: "Common", title: "Pemula Skena", desc: "Selesaikan 350 Misi Harian", reqType: "quest", reqAmount: 150, rewardSkin: "card_green", rewardName: "Emerald Card", color: "from-green-500 to-emerald-600", bgDark: "bg-green-900/20", borderDark: "border-green-500/30" },
-    { id: "sq2", tier: "II", rank: "Rare", title: "Istiqomah", desc: "Selesaikan 750 Misi Harian", reqType: "quest", reqAmount: 350, rewardSkin: "card_holo", rewardName: "Holo Card", color: "from-blue-400 to-indigo-600", bgDark: "bg-blue-900/20", borderDark: "border-blue-500/30" },
-    { id: "sq3", tier: "III", rank: "Epic", title: "Sepuh Tasbih", desc: "Capai 10.000x Total Dzikir", reqType: "tasbih", reqAmount: 10000, rewardSkin: "tasbih-glow", rewardName: "Neon Tasbih", color: "from-purple-500 to-fuchsia-600", bgDark: "bg-purple-900/20", borderDark: "border-purple-500/30" },
-    { id: "sq4", tier: "IV", rank: "Legendary", title: "Naga Epikal", desc: "Kalahkan 100 Boss Epikal", reqType: "epic", reqAmount: 15, rewardSkin: "card_crown", rewardName: "Crown Card", color: "from-orange-500 to-red-600", bgDark: "bg-orange-900/20", borderDark: "border-orange-500/30" },
-    { id: "sq5", tier: "V", rank: "Mythic", title: "Dewa Tasbih", desc: "Capai 50.000x Total Dzikir", reqType: "tasbih", reqAmount: 50000, rewardSkin: "tasbih-gold", rewardName: "Gold Tasbih", color: "from-yellow-400 to-amber-600", bgDark: "bg-yellow-900/20", borderDark: "border-yellow-500/30" }
+    { id: "sq1", tier: "I", rank: "Rare", title: "Pemula Skena", desc: "Selesaikan 500 Misi Harian", reqType: "quest", reqAmount: 500, rewardSkin: "card_green", rewardName: "Emerald Card", color: "from-green-500 to-emerald-600", bgDark: "bg-green-900/20", borderDark: "border-green-500/30" },
+    { id: "sq2", tier: "II", rank: "Epic", title: "Istiqomah", desc: "Selesaikan 2.000 Misi Harian", reqType: "quest", reqAmount: 2000, rewardSkin: "card_holo", rewardName: "Holo Card", color: "from-blue-400 to-indigo-600", bgDark: "bg-blue-900/20", borderDark: "border-blue-500/30" },
+    { id: "sq3", tier: "III", rank: "Epic", title: "Sepuh Tasbih", desc: "Capai 33.333 Total Dzikir", reqType: "tasbih", reqAmount: 33333, rewardSkin: "tasbih-glow", rewardName: "Neon Tasbih", color: "from-purple-500 to-fuchsia-600", bgDark: "bg-purple-900/20", borderDark: "border-purple-500/30" },
+    { id: "sq4", tier: "IV", rank: "Legendary", title: "Naga Epikal", desc: "Kalahkan 150 Boss Epikal", reqType: "epic", reqAmount: 150, rewardSkin: "card_crown", rewardName: "Crown Card", color: "from-orange-500 to-red-600", bgDark: "bg-orange-900/20", borderDark: "border-orange-500/30" },
+    { id: "sq5", tier: "V", rank: "Mythic", title: "Dewa Tasbih", desc: "Capai 50.000 Total Dzikir", reqType: "tasbih", reqAmount: 50000, rewardSkin: "tasbih-gold", rewardName: "Gold Tasbih", color: "from-yellow-400 to-amber-600", bgDark: "bg-yellow-900/20", borderDark: "border-yellow-500/30" }
 ];
 
 let safeState;
