@@ -140,10 +140,10 @@ const POOL_EPIKAL = [
 ];
 
 const SPECIAL_QUESTS = [
-    { id: "sq1", tier: "I", rank: "Common", title: "Pemula Skena", desc: "Selesaikan 150 Misi Harian", reqType: "quest", reqAmount: 150, rewardSkin: "card_green", rewardName: "Emerald Card", color: "from-green-500 to-emerald-600", bgDark: "bg-green-900/20", borderDark: "border-green-500/30" },
-    { id: "sq2", tier: "II", rank: "Rare", title: "Istiqomah", desc: "Selesaikan 350 Misi Harian", reqType: "quest", reqAmount: 350, rewardSkin: "card_holo", rewardName: "Holo Card", color: "from-blue-400 to-indigo-600", bgDark: "bg-blue-900/20", borderDark: "border-blue-500/30" },
+    { id: "sq1", tier: "I", rank: "Common", title: "Pemula Skena", desc: "Selesaikan 350 Misi Harian", reqType: "quest", reqAmount: 150, rewardSkin: "card_green", rewardName: "Emerald Card", color: "from-green-500 to-emerald-600", bgDark: "bg-green-900/20", borderDark: "border-green-500/30" },
+    { id: "sq2", tier: "II", rank: "Rare", title: "Istiqomah", desc: "Selesaikan 750 Misi Harian", reqType: "quest", reqAmount: 350, rewardSkin: "card_holo", rewardName: "Holo Card", color: "from-blue-400 to-indigo-600", bgDark: "bg-blue-900/20", borderDark: "border-blue-500/30" },
     { id: "sq3", tier: "III", rank: "Epic", title: "Sepuh Tasbih", desc: "Capai 10.000x Total Dzikir", reqType: "tasbih", reqAmount: 10000, rewardSkin: "tasbih-glow", rewardName: "Neon Tasbih", color: "from-purple-500 to-fuchsia-600", bgDark: "bg-purple-900/20", borderDark: "border-purple-500/30" },
-    { id: "sq4", tier: "IV", rank: "Legendary", title: "Naga Epikal", desc: "Kalahkan 55 Boss Epikal", reqType: "epic", reqAmount: 15, rewardSkin: "card_crown", rewardName: "Crown Card", color: "from-orange-500 to-red-600", bgDark: "bg-orange-900/20", borderDark: "border-orange-500/30" },
+    { id: "sq4", tier: "IV", rank: "Legendary", title: "Naga Epikal", desc: "Kalahkan 100 Boss Epikal", reqType: "epic", reqAmount: 15, rewardSkin: "card_crown", rewardName: "Crown Card", color: "from-orange-500 to-red-600", bgDark: "bg-orange-900/20", borderDark: "border-orange-500/30" },
     { id: "sq5", tier: "V", rank: "Mythic", title: "Dewa Tasbih", desc: "Capai 50.000x Total Dzikir", reqType: "tasbih", reqAmount: 50000, rewardSkin: "tasbih-gold", rewardName: "Gold Tasbih", color: "from-yellow-400 to-amber-600", bgDark: "bg-yellow-900/20", borderDark: "border-yellow-500/30" }
 ];
 
@@ -267,11 +267,18 @@ window.addExp = function(amount, isQuest = true) {
     window.renderSpecialQuests();
 };
 
+// ==========================================================================
+// FUNGSI BARU: Uncapped Radar Stat
+// ==========================================================================
 window.addRadarStat = function(stat, amount) {
     if(window.playerState.radar[stat] !== undefined) {
-        window.playerState.radar[stat] = Math.min(100, window.playerState.radar[stat] + amount);
+        // UNCAP LIMIT: Poin sekarang bisa tembus infinite
+        window.playerState.radar[stat] = window.playerState.radar[stat] + amount;
         window.saveState();
-        if(document.getElementById('view-stats').style.display === 'block') { window.renderRadarChart('main'); window.renderAchievements(); }
+        if(document.getElementById('view-stats').style.display === 'block') { 
+            window.renderRadarChart('main'); 
+            window.renderAchievements(); 
+        }
     }
 };
 
