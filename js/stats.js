@@ -218,18 +218,35 @@ window.renderAchievements = function() {
     
     if(safeBadgeDefs.length === 0) return;
 
+    // FUNGSI BARU: Kurva RPG Hardcore (Akar Kuadrat)
+    // Semakin tinggi levelnya, butuh poin eksponensial lebih banyak
+    const getHardLevel = (value, factor) => {
+        if (value <= 0) return 0;
+        return Math.min(99, Math.floor(Math.sqrt(value / factor)));
+    };
+
     container.innerHTML = safeBadgeDefs.map(b => {
         let level = 0;
-        if (b.stat) level = Math.min(25, Math.floor((radar[b.stat] || 0) / 4)); 
-        else if (b.type === 'overall_lvl') level = Math.min(25, Math.floor(overallLevel / 2));
-        else if (b.type === 'epic_quests') level = Math.min(25, s.epicCompleted || 0);
-        else if (b.type === 'total_quests') level = Math.min(25, Math.floor((s.questsCompleted || 0) / 10));
-        else if (b.type === 'tasbih_total') level = Math.min(25, Math.floor((s.tasbihTotal || 0) / 500));
+        
+        // PENGHITUNGAN LEVEL HARDCORE BIKIN NANGIS (Grinding sesungguhnya)
+        if (b.stat) level = getHardLevel(radar[b.stat] || 0, 4); // Misal radar 60 -> 60/4 = 15 -> akar(15) = Lv 3 (Turun drastis dari Lv 15!)
+        else if (b.type === 'overall_lvl') level = getHardLevel(overallLevel, 1); // Overall Lv 10 -> akar(10) = Lv 3
+        else if (b.type === 'epic_quests') level = getHardLevel(s.epicCompleted || 0, 1.5); 
+        else if (b.type === 'total_quests') level = getHardLevel(s.questsCompleted || 0, 5); // 125 Quest Harian -> 125/5 = 25 -> akar(25) = Lv 5
+        else if (b.type === 'tasbih_total') level = getHardLevel(s.tasbihTotal || 0, 1000); // 10.000 Tasbih -> 10.000/1000 = 10 -> akar(10) = Lv 3
         
         const isLocked = level === 0;
         let cardClass = isLocked ? "bg-gray-100 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 opacity-60 grayscale filter" : "bg-gradient-to-b from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/10 border border-yellow-300 dark:border-yellow-600/50 shadow-sm transform hover:scale-105 hover:shadow-md transition-all cursor-pointer group";
         let titleClass = isLocked ? "text-gray-400 dark:text-gray-500" : "text-yellow-700 dark:text-yellow-500";
-        return `<div class="${cardClass} rounded-2xl p-3 flex flex-col items-center text-center relative" title="${b.desc}"><span class="text-3xl mb-1.5 filter drop-shadow-sm ${!isLocked ? 'group-hover:animate-bounce' : ''}">${b.icon}</span><span class="text-[9px] font-black ${titleClass} leading-tight">${b.title}</span>${!isLocked ? `<span class="absolute -top-2 -right-2 bg-gradient-to-r from-rose-500 to-pink-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded shadow-sm">Lv.${level}</span>` : ''}</div>`;
+        
+        // Penyesuaian nama badge menjadi Admin Pusat
+        let displayTitle = (b.title === "Pusat" || b.title === "Wali Pusat") ? "Admin Pusat" : b.title;
+
+        return `<div class="${cardClass} rounded-2xl p-3 flex flex-col items-center text-center relative" title="${b.desc}">
+            <span class="text-3xl mb-1.5 filter drop-shadow-sm ${!isLocked ? 'group-hover:animate-bounce' : ''}">${b.icon}</span>
+            <span class="text-[9px] font-black ${titleClass} leading-tight">${displayTitle}</span>
+            ${!isLocked ? `<span class="absolute -top-2 -right-2 bg-gradient-to-r from-rose-500 to-pink-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded shadow-sm">Lv.${level}</span>` : ''}
+        </div>`;
     }).join('');
 };
 
