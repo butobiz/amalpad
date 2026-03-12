@@ -129,6 +129,9 @@ window.init3DCard = function() {
     wrapper.addEventListener('mouseleave', () => { card.style.transform = `rotateX(0deg) rotateY(0deg)`; });
 };
 
+// ==========================================================================
+// FUNGSI BARU: Radar Chart dengan Capped Visual & Uncapped Label Value
+// ==========================================================================
 window.renderRadarChart = function(targetMode = 'main') {
     const svg = document.getElementById(`radar-svg-${targetMode}`), webGroup = document.getElementById(`radar-web-group-${targetMode}`), axisGroup = document.getElementById(`radar-axis-group-${targetMode}`), polygon = document.getElementById(`radar-data-polygon-${targetMode}`), nodesGroup = document.getElementById(`radar-nodes-group-${targetMode}`), labelsContainer = document.getElementById(`radar-labels-container-${targetMode}`);
     if(!svg || !webGroup || !axisGroup || !polygon || !nodesGroup || !labelsContainer) return;
@@ -158,8 +161,12 @@ window.renderRadarChart = function(targetMode = 'main') {
 
     for(let i=0; i<6; i++) {
         const statKey = stats[i]; 
-        let val = Math.max(10, Math.min(100, safeRadar[statKey] || 10)); 
-        const dataR = (10 / 100) * r; 
+        
+        // PENGATURAN UNCAPPED: Pisahkan nilai asli dan nilai visual
+        let rawVal = Math.max(10, safeRadar[statKey] || 10); // Nilai asli yang bisa tembus ribuan
+        let visualVal = Math.min(100, rawVal); // Nilai visual mentok di 100 agar SVG tidak rusak
+        
+        const dataR = (visualVal / 100) * r; 
         const px = cx + dataR * Math.cos(angles[i]); const py = cy + dataR * Math.sin(angles[i]); 
         dataPoints += `${px},${py} `;
         
@@ -171,7 +178,8 @@ window.renderRadarChart = function(targetMode = 'main') {
         if(i===1 || i===2) alignmentClass = "transform translate-y-[-50%] text-left"; 
         if(i===4 || i===5) alignmentClass = "transform -translate-x-full translate-y-[-50%] text-right"; 
         
-        labelsContainer.innerHTML += `<div class="absolute text-[9px] font-black ${textColor} ${alignmentClass}" style="left: ${leftPercent}%; top: ${topPercent}%;">${labels[i]}<br><span class="${valColor} text-[10px]">${val}</span></div>`;
+        // Label menggunakan rawVal agar angka ribuan tetap muncul
+        labelsContainer.innerHTML += `<div class="absolute text-[9px] font-black ${textColor} ${alignmentClass}" style="left: ${leftPercent}%; top: ${topPercent}%;">${labels[i]}<br><span class="${valColor} text-[10px]">${rawVal}</span></div>`;
     }
     
     polygon.setAttribute('points', dataPoints.trim()); nodesGroup.innerHTML = nodesHtml;
@@ -179,8 +187,9 @@ window.renderRadarChart = function(targetMode = 'main') {
     setTimeout(() => {
         let realDataPoints = '';
         for(let i=0; i<6; i++) {
-            let val = Math.max(10, Math.min(100, safeRadar[stats[i]] || 10)); 
-            const dataR = (val / 100) * r; 
+            let rawVal = Math.max(10, safeRadar[stats[i]] || 10); 
+            let visualVal = Math.min(100, rawVal); // Sama, batasi visualnya
+            const dataR = (visualVal / 100) * r; 
             const px = cx + dataR * Math.cos(angles[i]); const py = cy + dataR * Math.sin(angles[i]);
             realDataPoints += `${px},${py} `; 
             const node = document.getElementById(`node-${targetMode}-${i}`); 
